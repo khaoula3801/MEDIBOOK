@@ -1,4 +1,4 @@
-content = """name: CI/CD MediBook
+name: CI/CD MediBook
 on:
   push:
     branches: [main]
@@ -25,8 +25,3 @@ jobs:
           SECRET_KEY: "ci-secret-key"
           ALLOWED_HOSTS: "localhost"
         run: python manage.py test
-"""
-
-with open('.github/workflows/ci-cd.yml', 'w', encoding='utf-8', newline='\n') as f:
-    f.write(content)
-print("OK")
