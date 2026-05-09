@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Orientation médicale IA{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">🤖 Aide intelligente à l'orientation médicale</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                Décrivez vos symptômes en français, le système analyse 
+                votre texte et vous suggère une spécialité médicale adaptée.
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Décrivez vos symptômes</label>
+                    <textarea name="symptoms" rows="4" class="form-control"
+                        placeholder="Ex: J'ai des douleurs dans la poitrine, 
+des palpitations et je me sens essoufflé...">{{ symptom_text }}</textarea>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-info text-white w-100">
+                            🔍 Analyser mes symptômes
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="reset" class="btn btn-outline-secondary w-100">
+                            🔄 Effacer
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            {% if recommendations %}
+            <hr>
+            <h5 class="mb-3">📋 Spécialités recommandées :</h5>
+
+            {% for rec in recommendations %}
+            <div class="d-flex align-items-center justify-content-between 
+                        border rounded p-3 mb-2
+                        {% if forloop.first %}border-info bg-light{% endif %}">
+                <div>
+                    {% if forloop.first %}
+                    <span class="badge bg-info me-2">Recommandée</span>
+                    {% endif %}
+                    <strong>{{ rec.specialty }}</strong>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="progress" style="width:100px;height:8px;">
+                        <div class="progress-bar bg-info" 
+                             style="width:{{ rec.score }}%"></div>
+                    </div>
+                    <span class="text-muted small">{{ rec.score }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if recommendations %}
+            <div class="mt-3">
+                <a href="{% url 'doctors:list' %}?specialty=" 
+                   class="btn btn-success">
+                    👨‍⚕️ Voir les médecins — {{ recommendations.0.specialty }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="alert alert-warning mt-3">
+                ⚠️ <strong>Important :</strong> Cette suggestion est indicative 
+                uniquement. Elle ne constitue pas un diagnostic médical. 
+                Consultez toujours un professionnel de santé.
+            </div>
+
+            {% elif symptom_text %}
+            <div class="alert alert-secondary">
+                Aucune spécialité trouvée pour ces symptômes. 
+                Essayez de décrire différemment.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header"><h6 class="mb-0">💡 Exemples de symptômes</h6></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="douleur poitrine palpitations essoufflement">
+                        ❤️ Douleur thoracique
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="boutons rougeurs démangeaisons peau">
+                        🩹 Problème de peau
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="fièvre enfant toux rhume">
+                        👶 Enfant malade
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="mal dents douleur dentaire carie">
+                        🦷 Douleur dentaire
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="maux de tête migraine vertiges">
+                        🧠 Maux de tête
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary mb-2 w-100 exemple-btn"
+                        data-text="vue trouble yeux douleur oculaire">
+                        👁️ Problème de vue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script>
+document.querySelectorAll('.exemple-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelector('textarea[name="symptoms"]').value = 
+            this.dataset.text;
+    });
+});
+</script>
+{% endblock %}

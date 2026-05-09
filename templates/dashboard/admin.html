@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord admin{% endblock %}
+{% block content %}
+<h2 class="mb-4">⚙️ Tableau de bord administrateur</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white text-center p-3">
+            <h3>{{ total_patients }}</h3>
+            <p class="mb-0">Patients</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white text-center p-3">
+            <h3>{{ total_doctors }}</h3>
+            <p class="mb-0">Médecins</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white text-center p-3">
+            <h3>{{ total_apts }}</h3>
+            <p class="mb-0">Rendez-vous total</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header"><h5>Rendez-vous par statut</h5></div>
+            <div class="card-body">
+                {% for label, count in by_status.items %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ label }}</span>
+                    <span class="badge bg-primary">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header"><h5>Rendez-vous par spécialité</h5></div>
+            <div class="card-body">
+                {% for item in by_specialty %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ item.name }}</span>
+                    <span class="badge bg-success">{{ item.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

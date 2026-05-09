@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Dr. {{ doctor.user.get_full_name }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                {% if doctor.photo %}
+                <img src="{{ doctor.photo.url }}" class="rounded-circle mb-3" 
+                     width="120" height="120">
+                {% else %}
+                <div class="bg-primary rounded-circle d-inline-flex align-items-center 
+                            justify-content-center mb-3"
+                     style="width:120px;height:120px;">
+                    <span class="text-white fs-1">
+                        {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
+                    </span>
+                </div>
+                {% endif %}
+                <h4>Dr. {{ doctor.user.get_full_name }}</h4>
+                {% for s in doctor.specialties.all %}
+                <span class="badge bg-primary">{{ s.name }}</span>
+                {% endfor %}
+                <hr>
+                <p class="text-muted">📍 {{ doctor.cabinet_address }}</p>
+                <p class="text-muted">⏱ {{ doctor.years_experience }} ans d'expérience</p>
+                <p class="text-muted">📞 {{ doctor.user.phone }}</p>
+            </div>
+            <div class="card-footer">
+                {% if user.is_authenticated %}
+                <a href="{% url 'appointments:book' doctor.pk %}" 
+                   class="btn btn-success w-100">Prendre rendez-vous</a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" 
+                   class="btn btn-outline-primary w-100">Connectez-vous pour réserver</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>À propos</h5>
+                <p>{{ doctor.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

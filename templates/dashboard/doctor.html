@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord médecin{% endblock %}
+{% block content %}
+<h2 class="mb-4">🩺 Tableau de bord — Dr. {{ request.user.get_full_name }}</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white text-center p-3">
+            <h3>{{ total }}</h3>
+            <p class="mb-0">Total rendez-vous</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white text-center p-3">
+            <h3>{{ confirmed }}</h3>
+            <p class="mb-0">Confirmés</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark text-center p-3">
+            <h3>{{ today_apts.count }}</h3>
+            <p class="mb-0">Aujourd'hui</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white text-center p-3">
+            <h3>{{ cancelled }}</h3>
+            <p class="mb-0">Annulés</p>
+        </div>
+    </div>
+</div>
+
+<h4>📋 Rendez-vous du jour</h4>
+{% if today_apts %}
+<div class="table-responsive">
+<table class="table table-hover">
+    <thead class="table-warning">
+        <tr>
+            <th>Heure</th>
+            <th>Patient</th>
+            <th>Motif</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for apt in today_apts %}
+    <tr>
+        <td>{{ apt.time|time:"H:i" }}</td>
+        <td>{{ apt.patient.get_full_name }}</td>
+        <td>{{ apt.reason|truncatechars:50 }}</td>
+        <td>
+            <span class="badge
+                {% if apt.status == 'confirmed' %}bg-success
+                {% elif apt.status == 'pending' %}bg-warning text-dark
+                {% else %}bg-secondary{% endif %}">
+                {{ apt.get_status_display }}
+            </span>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucun rendez-vous aujourd'hui.</div>
+{% endif %}
+
+<h4 class="mt-4">📅 Prochains rendez-vous</h4>
+{% if upcoming %}
+<div class="table-responsive">
+<table class="table table-hover">
+    <thead class="table-primary">
+        <tr><th>Date</th><th>Heure</th><th>Patient</th><th>Motif</th></tr>
+    </thead>
+    <tbody>
+    {% for apt in upcoming %}
+    <tr>
+        <td>{{ apt.date }}</td>
+        <td>{{ apt.time|time:"H:i" }}</td>
+        <td>{{ apt.patient.get_full_name }}</td>
+        <td>{{ apt.reason|truncatechars:50 }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucun rendez-vous à venir.</div>
+{% endif %}
+{% endblock %}

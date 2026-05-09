@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Mon espace patient{% endblock %}
+{% block content %}
+<h2 class="mb-4">👤 Mon espace patient</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white text-center p-3">
+            <h3>{{ upcoming.count }}</h3>
+            <p class="mb-0">Rendez-vous à venir</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white text-center p-3">
+            <h3>{{ past.count }}</h3>
+            <p class="mb-0">Consultations passées</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white text-center p-3">
+            <h3>{{ cancelled.count }}</h3>
+            <p class="mb-0">Rendez-vous annulés</p>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📅 Prochains rendez-vous</h4>
+    <a href="{% url 'doctors:list' %}" class="btn btn-primary">
+        + Prendre un rendez-vous
+    </a>
+</div>
+
+{% if upcoming %}
+<div class="table-responsive">
+<table class="table table-hover">
+    <thead class="table-primary">
+        <tr>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Médecin</th>
+            <th>Spécialité</th>
+            <th>Motif</th>
+            <th>Statut</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for apt in upcoming %}
+    <tr>
+        <td>{{ apt.date }}</td>
+        <td>{{ apt.time|time:"H:i" }}</td>
+        <td>Dr. {{ apt.doctor.user.get_full_name }}</td>
+        <td>{{ apt.specialty.name }}</td>
+        <td>{{ apt.reason|truncatechars:40 }}</td>
+        <td>
+            <span class="badge 
+                {% if apt.status == 'confirmed' %}bg-success
+                {% elif apt.status == 'pending' %}bg-warning text-dark
+                {% else %}bg-secondary{% endif %}">
+                {{ apt.get_status_display }}
+            </span>
+        </td>
+        <td>
+            <a href="{% url 'appointments:cancel' apt.pk %}" 
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Annuler ce rendez-vous ?')">
+                Annuler
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucun rendez-vous à venir.</div>
+{% endif %}
+
+{% if past %}
+<h4 class="mt-4">🕐 Historique des consultations</h4>
+<div class="table-responsive">
+<table class="table table-hover">
+    <thead class="table-secondary">
+        <tr>
+            <th>Date</th>
+            <th>Médecin</th>
+            <th>Spécialité</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for apt in past %}
+    <tr>
+        <td>{{ apt.date }}</td>
+        <td>Dr. {{ apt.doctor.user.get_full_name }}</td>
+        <td>{{ apt.specialty.name }}</td>
+        <td><span class="badge bg-secondary">{{ apt.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}
